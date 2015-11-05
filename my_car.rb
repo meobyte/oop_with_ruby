@@ -1,17 +1,13 @@
-class MyCar
+class Vehicle
 
-  attr_accessor :color
-  attr_reader :year
+  @@number_of_vehicles = 0
 
-  def self.gas_mileage(gallons, miles)
-    puts "Car gets #{miles/gallons} miles per gallon of gas"
+  def self.number_of_vehicles
+    puts "#{@@number_of_vehicles} have been created."
   end
 
-  def initialize(color, model, year)
-    @color = color
-    @model = model
-    @year = year
-    @current_speed = 0
+  def initialize
+    @@number_of_vehicles += 1
   end
 
   def speed_up(number)
@@ -32,6 +28,32 @@ class MyCar
     @current_speed = 0
     puts "Parking."
   end
+end
+
+class MyTruck < Vehicle
+  DOORS = 2
+
+end
+
+class MyCar < Vehicle
+
+  attr_accessor :color
+  attr_reader :year
+
+  DOORS = 4
+
+  def self.gas_mileage(gallons, miles)
+    puts "Car gets #{miles/gallons} miles per gallon of gas"
+  end
+
+  def initialize(color, model, year)
+    @color = color
+    @model = model
+    @year = year
+    @current_speed = 0
+  end
+
+
 
   def spray_paint(color)
     self.color = color
