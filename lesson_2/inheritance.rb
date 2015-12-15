@@ -2,7 +2,7 @@ class Pet
   def run
     'running'
   end
-  
+
   def jump
     'jumping'
   end
@@ -12,11 +12,11 @@ class Dog < Pet
   def swim
     'swimming!'
   end
-  
+
   def speak
     'bark!'
   end
-  
+
   def fetch
     'fetching!'
   end

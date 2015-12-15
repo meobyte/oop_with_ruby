@@ -22,7 +22,7 @@ class Vehicle
   end
 
   def self.gas_mileage(gallons, miles)
-    puts "#{miles/gallons} miles per gallon of gas"
+    puts "#{miles / gallons} miles per gallon of gas"
   end
 
   def spray_paint(color)
@@ -70,13 +70,11 @@ class MyTruck < Vehicle
 end
 
 class MyCar < Vehicle
-
   DOORS = 4
 
   def to_s
     "My car is a #{color}, #{year}, #{@model}!"
   end
-
 end
 
 cavalier = MyCar.new("blue", "chevy cavalier", 1988)

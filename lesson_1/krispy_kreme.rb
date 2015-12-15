@@ -1,5 +1,4 @@
 class KrispyKreme
-
   def initialize(filling_type, glazing)
     @filling_type = filling_type || "Plain"
     @glazing = glazing
@@ -9,7 +8,6 @@ class KrispyKreme
     glazing_string = @glazing ? "with #{@glazing}" : ''
     "#{@filling_type} #{glazing_string}"
   end
-
 end
 
 donut1 = KrispyKreme.new(nil, nil)

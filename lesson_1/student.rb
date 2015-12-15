@@ -13,9 +13,9 @@ class Student
 
   protected
 
-   def grade
+  def grade
      @grade
-   end
+  end
 end
 
 joe = Student.new("Joe", 90)
