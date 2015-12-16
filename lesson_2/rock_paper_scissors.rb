@@ -92,10 +92,12 @@ class RPSGame
     puts "Thanks for playing!"
   end
 
-  def display_winner
+  def display_moves
     puts "#{human.name} chose #{human.move}"
     puts "#{computer.name} chose #{computer.move}"
+  end
 
+  def display_winner
     if human.move > computer.move
       puts "#{human.name} won!"
     elsif computer.move > human.move
@@ -114,7 +116,7 @@ class RPSGame
       puts "Sorry, must be y or n"
     end
 
-    return true if answer == 'y'
+    answer == 'y'
   end
 
   def play
@@ -122,6 +124,7 @@ class RPSGame
     loop do
       human.choose
       computer.choose
+      display_moves
       display_winner
       break unless play_again?
     end
