@@ -54,6 +54,11 @@ class RPSGame
     puts "Thanks for playing!"
   end
 
+  def display_winner
+    puts "You chose #{human.move}"
+    puts "Computer chose #{computer.move}"
+  end
+
   def play
     display_welcome_message
     human.choose
