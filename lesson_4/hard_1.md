@@ -80,8 +80,11 @@ class Catamaran < Watercraft
 end
 ```
 
-4
+4 add the below method to the Watercraft class
 ```ruby
-
+def range
+  range_by_using_fuel = super
+  return range_by_using_fuel + 10
+end
 ```
 
