@@ -1,4 +1,4 @@
-1.
+1
 ```
 true.class
 "hello".class
@@ -8,21 +8,20 @@ true.class
 All are objects
 
 
-2. Add ```include Speed``` to Car and Truck
+2 Add ```include Speed``` to Car and Truck
 
-3. ```self.class```
+3 ```self.class```
 
-4. ```AngryCat.new```
+4 ```AngryCat.new```
 
-5.  Pizza has an instance variable with an @ infront of it. Can be checked with
-```instance_variables```
+5  Pizza has an instance variable with an @ infront of it. Can be checked with ```instance_variables```
 
-6. ```get_volume``` or ```attr_reader :volume```
+6 ```get_volume``` or ```attr_reader :volume```
 
-7. The Object Id
+7 The Object Id
 
-8. The instance of the object
+8 The instance of the object
 
-9. The class
+9 The class
 
-10. ```Bag.new("", "")```
+10 ```Bag.new("", "")```
