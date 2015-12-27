@@ -18,7 +18,7 @@ class Card
   end
 
   def to_s
-    "#{rank} #{find_suit}".rjust(4) + " |"
+    "#{rank} #{suit}".rjust(4) + " |"
   end
 end
 
@@ -26,7 +26,7 @@ class Deck
   attr_accessor :cards
 
   def initialize
-    @cards []
+    @cards = []
     Card::SUITS.each do |suit|
       Card::RANKS.each { |rank| @cards << Card.new(suit, rank) }
     end
@@ -102,43 +102,57 @@ class Player < Participant
     end
     self.name = name
   end
+
+  def show_flop
+    show_hand
+  end
 end
 
-class Dealer
+class Dealer < Participant
+  ROBOTS = ['R2D2', 'Hal', 'Chappie', 'Sonny', 'Number 5']
+
+  def set_name
+    self.name = ROBOTS.sample
+  end
+
+  def show_flop
+    puts "#{name.rjust(10)}: |\u25A9\u25A9\u25A9\u25A9 |#{cards[1].to_s}\n\n"
+  end
+end
+
+class TwentyOne
+  attr_accessor :deck, :player, :dealer
+
   def initialize
+    @deck = Deck.new
+    @player = Player.new
+    @dealer = Dealer.new
   end
 
-  def deal
-  end
-
-  def hit
-  end
-
-  def stay
-  end
-
-  def busted?
-  end
-
-  def total
-  end
-end
-
-
-
-
-
-
-
-class Game
   def start
     deal_cards
-    show_initial_cards
-    player_turn
-    dealer_turn
-    show_result
+    show_flop
+   # player_turn
+   # dealer_turn
+   # show_result
   end
+
+  private
+
+  def deal_cards
+    2.times do
+      player.add_card(deck.deal)
+      dealer.add_card(deck.deal)
+    end
+  end
+
+  def show_flop
+    player.show_flop
+    dealer.show_flop
+  end
+
 end
 
-Game.new.start
+game = TwentyOne.new
+game.start
 

@@ -185,10 +185,6 @@ class TTTGame
     board[board.unmarked_keys.sample] = computer.marker
   end
 
-  def get_best_move
-
-  end
-
   def current_player_moves
     if @current_marker == HUMAN_MARKER
       human_moves
