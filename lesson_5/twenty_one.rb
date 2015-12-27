@@ -82,23 +82,25 @@ module Hand
 end
 
 class Participant
+  include Hand
 
+  attr_accessor :name, :cards
+  def initialize
+    @cards = []
+    set_name
+  end
 end
 
-class Player
-  def initialize
-  end
-
-  def hit
-  end
-
-  def stay
-  end
-
-  def busted?
-  end
-
-  def total
+class Player < Participant
+  def set_name
+    name = ''
+    loop do
+      puts "What's your name?"
+      name = gets.chomp
+      break unless name.empty?
+      puts "Sorry, must enter a value."
+    end
+    self.name = name
   end
 end
 
