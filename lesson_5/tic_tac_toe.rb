@@ -80,6 +80,10 @@ class TTTGame
     @computer = Player.new(COMPUTER_MARKER)
   end
 
+  def clear
+    system 'clear'
+  end
+
   def display_welcome_message
     puts 'Welcome to Tic Tac Toe!'
     puts ''
@@ -89,8 +93,12 @@ class TTTGame
     puts 'Thanks for playing! Goodbye!'
   end
 
-  def display_board(clear = true)
-    system 'clear' if clear
+  def clear_screen_and_display_board
+    clear
+    display_board
+  end
+
+  def display_board
     puts <<-eos
   You are #{human.marker}. Computer is #{computer.marker}.
 
@@ -126,7 +134,7 @@ class TTTGame
   end
 
   def display_result
-    display_board
+    clear_screen_and_display_board
     case board.detect_winner
     when human.marker
       puts 'You won!'
@@ -150,11 +158,11 @@ class TTTGame
   end
 
   def play
-    system 'clear'
+    clear
     display_welcome_message
 
     loop do
-      display_board(false)
+      display_board
 
       loop do
         human_moves
@@ -162,12 +170,12 @@ class TTTGame
 
         computer_moves
         break if board.someone_won? || board.full?
-       display_board
+       clear_screen_and_display_board
       end
       display_result
       break unless play_again?
       board.reset
-      system 'clear'
+      clear
       puts "Let's play again!"
     end
     display_goodbye_message
