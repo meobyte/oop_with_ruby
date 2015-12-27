@@ -133,8 +133,13 @@ class TwentyOne
     deal_cards
     show_flop
     player_turn
-   # dealer_turn
-   # show_result
+    dealer_turn
+    show_cards
+    if player.busted? || dealer.busted?
+      show_busted
+    else
+      show_result
+    end
   end
 
   private
@@ -149,6 +154,34 @@ class TwentyOne
   def show_flop
     player.show_flop
     dealer.show_flop
+  end
+
+  def show_round
+    player.show_hand
+    dealer.show_flop
+  end
+
+  def show_cards
+    player.show_final_hand
+    dealer.show_final_hand
+  end
+
+  def show_busted
+    if player.busted?
+      puts "#{player.name} busts! #{dealer.name} wins!"
+    elsif dealer.busted?
+      puts "#{dealer.name} busts! #{player.name} wins!"
+    end
+  end
+
+  def show_result
+    if player.total > dealer.total
+      puts "#{player.name} wins!"
+    elsif player.total < dealer.total
+      puts "#{dealer.name} wins!"
+    else
+      puts "It's a tie!"
+    end
   end
 
   def player_turn
@@ -169,12 +202,16 @@ class TwentyOne
       else
         player.add_card(deck.deal)
         puts "#{player.name} hits"
-        player.show_hand
+        show_round
         break if player.busted?
       end
     end
   end
 
+  def dealer_turn
+    return if player.busted?
+    dealer.add_card(deck.deal) until dealer.total >= 17 || dealer.busted?
+  end
 
 end
 
