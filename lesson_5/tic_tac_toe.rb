@@ -12,11 +12,7 @@ class Board
     (1..9).each { |key| @squares[key] = Square.new }
   end
 
-  def get_square_at(key)
-    @squares[key]
-  end
-
-  def set_square_at(key, marker)
+  def []=(key, marker)
     @squares[key].marker = marker
   end
 
@@ -41,6 +37,22 @@ class Board
       end
     end
     nil
+  end
+
+  def draw
+    puts <<-eos
+       |     |
+    #{@squares[1]}  |  #{@squares[2]}  |  #{@squares[3]}
+       |     |
+  -----+-----+-----
+       |     |
+    #{@squares[4]}  |  #{@squares[5]}  |  #{@squares[6]}
+       |     |
+  -----+-----+-----
+       |     |
+    #{@squares[7]}  |  #{@squares[8]}  |  #{@squares[9]}
+       |     |
+    eos
   end
 end
 
@@ -104,22 +116,10 @@ class TTTGame
   end
 
   def display_board
-    puts <<-eos
-  You are #{human.marker}. Computer is #{computer.marker}.
-
-       |     |
-    #{board.get_square_at(1)}  |  #{board.get_square_at(2)}  |  #{board.get_square_at(3)}
-       |     |
-  -----+-----+-----
-       |     |
-    #{board.get_square_at(4)}  |  #{board.get_square_at(5)}  |  #{board.get_square_at(6)}
-       |     |
-  -----+-----+-----
-       |     |
-    #{board.get_square_at(7)}  |  #{board.get_square_at(8)}  |  #{board.get_square_at(9)}
-       |     |
-
-    eos
+    puts "You are #{human.marker}. Computer is #{computer.marker}."
+    puts ''
+    board.draw
+    puts ''
   end
 
   def human_moves
@@ -131,11 +131,11 @@ class TTTGame
       puts "Sorry, that's not a valid choice."
     end
 
-    board.set_square_at(square, human.marker)
+    board[square] = human.marker
   end
 
   def computer_moves
-    board.set_square_at(board.unmarked_keys.sample, computer.marker)
+    board[board.unmarked_keys.sample] = computer.marker
   end
 
   def display_result
