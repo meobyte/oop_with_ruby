@@ -30,9 +30,9 @@ class Board
 
   def detect_winner
     WINS.each do |line|
-      if @squares[line[0]].marker == TTTGame::HUMAN_MARKER && @squares[line[1]].marker == TTTGame::HUMAN_MARKER && @squares[line[2]].marker == TTTGame::HUMAN_MARKER
+      if line.all? { |square| @squares[square].marker == TTTGame::HUMAN_MARKER }
         return TTTGame::HUMAN_MARKER
-      elsif @squares[line[0]].marker == TTTGame::COMPUTER_MARKER && @squares[line[1]].marker == TTTGame::COMPUTER_MARKER && @squares[line[2]].marker == TTTGame::COMPUTER_MARKER
+      elsif line.all? { |square| @squares[square].marker == TTTGame::COMPUTER_MARKER }
         return TTTGame::COMPUTER_MARKER
       end
     end
