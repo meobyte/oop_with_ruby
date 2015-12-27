@@ -132,7 +132,7 @@ class TwentyOne
   def start
     deal_cards
     show_flop
-   # player_turn
+    player_turn
    # dealer_turn
    # show_result
   end
@@ -150,6 +150,31 @@ class TwentyOne
     player.show_flop
     dealer.show_flop
   end
+
+  def player_turn
+    loop do
+      puts "Would you like to (h)it or (s)tay?"
+      answer = nil
+      loop do
+        answer = gets.chomp.downcase
+        break if %w(h s).include?(answer)
+        puts "Sorry, must enter 'h' or 's'."
+      end
+
+      if answer == 's'
+        puts "#{player.name} stays."
+        break
+      elsif player.busted?
+        break
+      else
+        player.add_card(deck.deal)
+        puts "#{player.name} hits"
+        player.show_hand
+        break if player.busted?
+      end
+    end
+  end
+
 
 end
 
