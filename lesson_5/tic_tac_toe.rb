@@ -30,10 +30,9 @@ class Board
 
   def winning_marker
     WINS.each do |line|
-      if line.all? { |square| @squares[square].marker == TTTGame::HUMAN_MARKER }
-        return TTTGame::HUMAN_MARKER
-      elsif line.all? { |square| @squares[square].marker == TTTGame::COMPUTER_MARKER }
-        return TTTGame::COMPUTER_MARKER
+      squares = @squares.values_at(*line)
+      if three_in_a_row?(squares)
+        return squares.first.marker
       end
     end
     nil
@@ -54,6 +53,14 @@ class Board
        |     |
     eos
   end
+
+  private
+
+  def three_in_a_row?(squares)
+    markers = squares.select(&:marked?).collect(&:marker)
+    return false if markers.size != 3
+    markers.min == markers.max
+  end
 end
 
 class Square
@@ -71,6 +78,10 @@ class Square
   def unmarked?
     marker == INITIAL_MARKER
   end
+
+  def marked?
+    marker != INITIAL_MARKER
+  end
 end
 
 class Player
@@ -85,12 +96,36 @@ class TTTGame
   attr_reader :board, :human, :computer
   HUMAN_MARKER = 'X'
   COMPUTER_MARKER = 'O'
+  FIRST_TO_MOVE = HUMAN_MARKER
 
   def initialize
     @board = Board.new
     @human = Player.new(HUMAN_MARKER)
     @computer = Player.new(COMPUTER_MARKER)
+    @current_marker = FIRST_TO_MOVE
   end
+
+  def play
+    clear
+    display_welcome_message
+
+    loop do
+      display_board
+
+      loop do
+        current_player_moves
+        break if board.someone_won? || board.full?
+        clear_screen_and_display_board
+      end
+      display_result
+      break unless play_again?
+      reset
+      display_play_again_message
+    end
+    display_goodbye_message
+  end
+
+  private
 
   def clear
     system 'clear'
@@ -138,6 +173,16 @@ class TTTGame
     board[board.unmarked_keys.sample] = computer.marker
   end
 
+  def current_player_moves
+    if @current_marker == HUMAN_MARKER
+      human_moves
+      @current_marker = COMPUTER_MARKER
+    else
+      computer_moves
+      @current_marker = HUMAN_MARKER
+    end
+  end
+
   def display_result
     clear_screen_and_display_board
     case board.winning_marker
@@ -164,30 +209,8 @@ class TTTGame
 
   def reset
     board.reset
+    @current_marker = FIRST_TO_MOVE
     clear
-  end
-
-  def play
-    clear
-    display_welcome_message
-
-    loop do
-      display_board
-
-      loop do
-        human_moves
-        break if board.someone_won? || board.full?
-
-        computer_moves
-        break if board.someone_won? || board.full?
-       clear_screen_and_display_board
-      end
-      display_result
-      break unless play_again?
-      reset
-      display_play_again_message
-    end
-    display_goodbye_message
   end
 end
 
