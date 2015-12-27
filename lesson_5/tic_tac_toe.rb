@@ -85,10 +85,12 @@ class Square
 end
 
 class Player
+  attr_accessor :score
   attr_reader :marker
 
   def initialize(marker)
     @marker = marker
+    @score = 0
   end
 end
 
@@ -142,7 +144,17 @@ class TTTGame
   end
 
   def display_goodbye_message
+    if human.score == 5
+      puts "You won the game!"
+    elsif computer.score == 5
+      puts "Computer won the game!"
+    end
     puts 'Thanks for playing! Goodbye!'
+  end
+
+  def joinor(array, delimiter = ', ', word = 'or')
+    array[-1] = "#{word} #{array.last}" if array.size > 1
+    array.join(delimiter)
   end
 
   def clear_screen_and_display_board
@@ -158,7 +170,7 @@ class TTTGame
   end
 
   def human_moves
-    puts "Choose a square (#{board.unmarked_keys.join(', ')}): "
+    puts "Choose a square (#{joinor(board.unmarked_keys)}):"
     square = nil
     loop do
       square = gets.chomp.to_i
@@ -171,6 +183,10 @@ class TTTGame
 
   def computer_moves
     board[board.unmarked_keys.sample] = computer.marker
+  end
+
+  def get_best_move
+
   end
 
   def current_player_moves
@@ -187,15 +203,19 @@ class TTTGame
     clear_screen_and_display_board
     case board.winning_marker
     when human.marker
-      puts 'You won!'
+      human.score += 1
+      puts 'You won this round!'
     when computer.marker
-      puts 'Computer won!'
+      computer.score += 1
+      puts 'Computer won this round!'
     else
       puts "It's a tie!"
     end
+    puts "You: #{human.score}; Computer: #{computer.score}"
   end
 
   def play_again?
+    return false if human.score == 5 || computer.score == 5
     answer = nil
     loop do
       puts 'Would you like to play again? (y/n)'
