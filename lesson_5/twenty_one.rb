@@ -45,7 +45,7 @@ end
 module Hand
   def show_hand
     hand = "|"
-    cards.each {|card| hand += card.to_s}
+    cards.each { |card| hand += card.to_s }
     puts "#{name.rjust(10)}: #{hand}"
   end
 
@@ -55,8 +55,8 @@ module Hand
   end
 
   def total
-    ranks = cards.map { |card| card.rank }
-    aces_count = ranks.count { |rank| rank == "A"}
+    ranks = cards.map(&:rank)
+    aces_count = ranks.count { |rank| rank == "A" }
     total = 0
 
     ranks.each do |rank|
@@ -116,7 +116,7 @@ class Dealer < Participant
   end
 
   def show_flop
-    puts "#{name.rjust(10)}: |\u25A9\u25A9\u25A9\u25A9 |#{cards[1].to_s}\n\n"
+    puts "#{name.rjust(10)}: |\u25A9\u25A9\u25A9\u25A9 |#{cards[1]}\n\n"
   end
 end
 
@@ -130,19 +130,31 @@ class TwentyOne
   end
 
   def start
-    deal_cards
-    show_flop
-    player_turn
-    dealer_turn
-    show_cards
-    if player.busted? || dealer.busted?
-      show_busted
-    else
-      show_result
+    loop do
+      system 'clear'
+      deal_cards
+      show_flop
+      player_turn
+      dealer_turn
+      show_cards
+      if player.busted? || dealer.busted?
+        show_busted
+      else
+        show_result
+      end
+      play_again? ? reset : break
     end
+
+    puts "Thank you for playing Twenty-One. Goodbye!"
   end
 
   private
+
+  def reset
+    self.deck = Deck.new
+    player.cards = []
+    dealer.cards = []
+  end
 
   def deal_cards
     2.times do
@@ -184,27 +196,28 @@ class TwentyOne
     end
   end
 
+  def hit_or_stay
+    puts "Would you like to (h)it or (s)tay?"
+    answer = nil
+    loop do
+      answer = gets.chomp.downcase
+      break if %w(h s).include?(answer)
+      puts "Sorry, must enter 'h' or 's'."
+    end
+    answer
+  end
+
   def player_turn
     loop do
-      puts "Would you like to (h)it or (s)tay?"
-      answer = nil
-      loop do
-        answer = gets.chomp.downcase
-        break if %w(h s).include?(answer)
-        puts "Sorry, must enter 'h' or 's'."
-      end
-
-      if answer == 's'
+      if hit_or_stay == 's'
         puts "#{player.name} stays."
-        break
-      elsif player.busted?
         break
       else
         player.add_card(deck.deal)
         puts "#{player.name} hits"
         show_round
-        break if player.busted?
       end
+      break if player.busted?
     end
   end
 
@@ -213,8 +226,18 @@ class TwentyOne
     dealer.add_card(deck.deal) until dealer.total >= 17 || dealer.busted?
   end
 
+  def play_again?
+    answer = nil
+    loop do
+      puts 'Would you like to play again? (y/n)'
+      answer = gets.chomp.downcase
+      break if %w(y n).include? answer
+      puts 'Sorry, must be y or n.'
+    end
+
+    answer == 'y'
+  end
 end
 
 game = TwentyOne.new
 game.start
-
