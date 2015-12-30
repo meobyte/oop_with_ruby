@@ -94,16 +94,41 @@ class Player
   end
 end
 
+class Human < Player
+  def move(board)
+    puts "Choose a square (#{joinor(board.unmarked_keys)}):"
+    square = nil
+    loop do
+      square = gets.chomp.to_i
+      break if board.unmarked_keys.include?(square)
+      puts "Sorry, that's not a valid choice."
+    end
+
+    board[square] = marker
+  end
+
+  def joinor(array, delimiter = ', ', word = 'or')
+    array[-1] = "#{word} #{array.last}" if array.size > 1
+    array.join(delimiter)
+  end
+end
+
+class Computer < Player
+  def move(board)
+    board[board.unmarked_keys.sample] = marker
+  end
+end
+
 class TTTGame
   attr_reader :board, :human, :computer
-  HUMAN_MARKER = 'X'
-  COMPUTER_MARKER = 'O'
-  FIRST_TO_MOVE = HUMAN_MARKER
+  X_MARKER = 'X'
+  O_MARKER = 'O'
+  FIRST_TO_MOVE = X_MARKER
 
   def initialize
     @board = Board.new
-    @human = Player.new(HUMAN_MARKER)
-    @computer = Player.new(COMPUTER_MARKER)
+    @human = Human.new(X_MARKER)
+    @computer = Computer.new(O_MARKER)
     @current_marker = FIRST_TO_MOVE
   end
 
@@ -113,12 +138,8 @@ class TTTGame
 
     loop do
       display_board
-
-      loop do
-        current_player_moves
-        break if board.someone_won? || board.full?
-        clear_screen_and_display_board
-      end
+      take_turns
+      keep_score
       display_result
       break unless play_again?
       reset
@@ -152,11 +173,6 @@ class TTTGame
     puts 'Thanks for playing! Goodbye!'
   end
 
-  def joinor(array, delimiter = ', ', word = 'or')
-    array[-1] = "#{word} #{array.last}" if array.size > 1
-    array.join(delimiter)
-  end
-
   def clear_screen_and_display_board
     clear
     display_board
@@ -169,29 +185,30 @@ class TTTGame
     puts ''
   end
 
-  def human_moves
-    puts "Choose a square (#{joinor(board.unmarked_keys)}):"
-    square = nil
-    loop do
-      square = gets.chomp.to_i
-      break if board.unmarked_keys.include?(square)
-      puts "Sorry, that's not a valid choice."
-    end
-
-    board[square] = human.marker
-  end
-
-  def computer_moves
-    board[board.unmarked_keys.sample] = computer.marker
-  end
-
   def current_player_moves
-    if @current_marker == HUMAN_MARKER
-      human_moves
-      @current_marker = COMPUTER_MARKER
+    if @current_marker == X_MARKER
+      human.move(board)
+      @current_marker = O_MARKER
     else
-      computer_moves
-      @current_marker = HUMAN_MARKER
+      computer.move(board)
+      @current_marker = X_MARKER
+    end
+  end
+
+  def take_turns
+    loop do
+      current_player_moves
+      break if board.someone_won? || board.full?
+      clear_screen_and_display_board
+    end
+  end
+
+  def keep_score
+    case board.winning_marker
+    when human.marker
+      human.score += 1
+    when computer.marker
+      computer.score += 1
     end
   end
 
@@ -199,10 +216,8 @@ class TTTGame
     clear_screen_and_display_board
     case board.winning_marker
     when human.marker
-      human.score += 1
       puts 'You won this round!'
     when computer.marker
-      computer.score += 1
       puts 'Computer won this round!'
     else
       puts "It's a tie!"
