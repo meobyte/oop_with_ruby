@@ -1,3 +1,4 @@
+require 'pry'
 class Board
   WINS = [[1, 2, 3], [4, 5, 6], [7, 8, 9],
           [1, 4, 7], [2, 5, 8], [3, 6, 9],
@@ -115,7 +116,31 @@ end
 
 class Computer < Player
   def move(board)
+    board[best_move(board)] = marker
+  end
+
+  def random_move(board)
     board[board.unmarked_keys.sample] = marker
+  end
+
+  def best_move(board, depth=0, score={})
+    return 0 if board.full?
+    return -1 if board.someone_won?
+
+    board.unmarked_keys.each do |space|
+      board[space] = board.unmarked_keys.size.even? ? 'O' : 'X'
+      score[space] = -1 * best_move(board, depth + 1, {})
+      board[space] = ' '
+    end
+
+
+    if depth == 0
+      return score.max_by { |key, value| value }[0]
+    else
+      binding.pry
+      return score.max_by { |key, value| value }[1]
+    end
+
   end
 end
 
