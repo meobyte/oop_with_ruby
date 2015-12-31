@@ -133,14 +133,11 @@ class Computer < Player
       board[space] = ' '
     end
 
-
     if depth == 0
-      return score.max_by { |key, value| value }[0]
+      return score.max_by { |_, value| value }[0]
     else
-      binding.pry
-      return score.max_by { |key, value| value }[1]
+      return score.max_by { |_, value| value }[1]
     end
-
   end
 end
 
