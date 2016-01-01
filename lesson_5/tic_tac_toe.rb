@@ -86,8 +86,7 @@ class Square
 end
 
 class Player
-  attr_accessor :score
-  attr_reader :marker
+  attr_accessor :score, :marker
 
   def initialize(marker)
     @marker = marker
@@ -116,6 +115,7 @@ end
 
 module ComputerPlayer
   def computer_move
+    puts 'Thinking... Please wait.'
     minimax(board)
     board[@choice] = computer.marker
   end
@@ -123,11 +123,12 @@ module ComputerPlayer
   def move_score(board)
     case board.winning_marker
     when computer.marker
-      return 10
+      10
     when human.marker
-      return -10
+      -10
+    else
+      0
     end
-    return 0
   end
 
   def minimax(board, marker_state = computer.marker)
@@ -137,7 +138,7 @@ module ComputerPlayer
     board.unmarked_keys.each do |space|
       board[space] = marker_state
       scores[space] = minimax(board, switch_marker(marker_state))
-      board[space] = ' '
+      board[space] = Square::INITIAL_MARKER
     end
 
     if marker_state == computer.marker
@@ -147,7 +148,7 @@ module ComputerPlayer
     end
 
     @choice = best_score[0]
-    return best_score[1]
+    best_score[1]
   end
 end
 
@@ -158,6 +159,7 @@ class TTTGame
   X_MARKER = 'X'
   O_MARKER = 'O'
   FIRST_TO_MOVE = X_MARKER
+  MAX_SCORE = 5
 
   def initialize
     @board = Board.new
@@ -169,7 +171,7 @@ class TTTGame
   def play
     clear
     display_welcome_message
-
+    choose_marker
     loop do
       display_board
       take_turns
@@ -199,12 +201,17 @@ class TTTGame
   end
 
   def display_goodbye_message
-    if human.score == 5
+    puts 'Thanks for playing! Goodbye!'
+  end
+
+  def display_final_score
+    if human.score == MAX_SCORE
       puts "You won the game!"
-    elsif computer.score == 5
+    elsif computer.score == MAX_SCORE
       puts "Computer won the game!"
     end
-    puts 'Thanks for playing! Goodbye!'
+    human.score = 0
+    computer.score = 0
   end
 
   def clear_screen_and_display_board
@@ -217,6 +224,21 @@ class TTTGame
     puts ''
     board.draw
     puts ''
+  end
+
+  def choose_marker
+    answer = nil
+    loop do
+      puts "Would you like to be '#{X_MARKER}' or '#{O_MARKER}'?"
+      answer = gets.chomp.upcase
+      break if [X_MARKER, O_MARKER].include? answer
+      puts "Sorry, answer must be '#{X_MARKER}' or '#{O_MARKER}'"
+    end
+
+    if answer == O_MARKER
+      human.marker = O_MARKER
+      computer.marker = X_MARKER
+    end
   end
 
   def switch_marker(marker_state)
@@ -263,7 +285,7 @@ class TTTGame
   end
 
   def play_again?
-    return false if human.score == 5 || computer.score == 5
+    display_final_score if human.score == MAX_SCORE || computer.score == MAX_SCORE
     answer = nil
     loop do
       puts 'Would you like to play again? (y/n)'
