@@ -116,10 +116,39 @@ end
 
 module ComputerPlayer
   def computer_move
-    board[board.unmarked_keys.sample] = computer.marker
+    minimax(board)
+    board[@choice] = computer.marker
   end
 
+  def move_score(board)
+    case board.winning_marker
+    when computer.marker
+      return 10
+    when human.marker
+      return -10
+    end
+    return 0
+  end
 
+  def minimax(board, marker_state = computer.marker)
+    return move_score(board) if board.full? || board.someone_won?
+    scores = {}
+
+    board.unmarked_keys.each do |space|
+      board[space] = marker_state
+      scores[space] = minimax(board, switch_marker(marker_state))
+      board[space] = ' '
+    end
+
+    if marker_state == computer.marker
+      best_score = scores.max_by { |_k, v| v }
+    else
+      best_score = scores.min_by { |_k, v| v }
+    end
+
+    @choice = best_score[0]
+    return best_score[1]
+  end
 end
 
 class TTTGame
@@ -190,14 +219,17 @@ class TTTGame
     puts ''
   end
 
+  def switch_marker(marker_state)
+    marker_state == computer.marker ? human.marker : computer.marker
+  end
+
   def current_player_moves
-    if @current_marker == X_MARKER
+    if @current_marker == human.marker
       human_move
-      @current_marker = O_MARKER
     else
       computer_move
-      @current_marker = X_MARKER
     end
+    @current_marker = switch_marker(@current_marker)
   end
 
   def take_turns
