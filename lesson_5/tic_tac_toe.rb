@@ -1,4 +1,3 @@
-require 'pry'
 class Board
   WINS = [[1, 2, 3], [4, 5, 6], [7, 8, 9],
           [1, 4, 7], [2, 5, 8], [3, 6, 9],
@@ -87,9 +86,22 @@ end
 
 class Player
   attr_accessor :score, :marker
+  MAX_SCORE = 2
 
   def initialize(marker)
     @marker = marker
+    @score = 0
+  end
+
+  def max_score?
+    score == MAX_SCORE
+  end
+
+  def score_point
+    @score += 1
+  end
+
+  def score_reset
     @score = 0
   end
 end
@@ -159,7 +171,6 @@ class TTTGame
   X_MARKER = 'X'
   O_MARKER = 'O'
   FIRST_TO_MOVE = X_MARKER
-  MAX_SCORE = 5
 
   def initialize
     @board = Board.new
@@ -204,16 +215,6 @@ class TTTGame
     puts 'Thanks for playing! Goodbye!'
   end
 
-  def display_final_score
-    if human.score == MAX_SCORE
-      puts "You won the game!"
-    elsif computer.score == MAX_SCORE
-      puts "Computer won the game!"
-    end
-    human.score = 0
-    computer.score = 0
-  end
-
   def clear_screen_and_display_board
     clear
     display_board
@@ -238,6 +239,9 @@ class TTTGame
     if answer == O_MARKER
       human.marker = O_MARKER
       computer.marker = X_MARKER
+    else
+      human.marker = X_MARKER
+      computer.marker = O_MARKER
     end
   end
 
@@ -265,9 +269,9 @@ class TTTGame
   def keep_score
     case board.winning_marker
     when human.marker
-      human.score += 1
+      human.score_point
     when computer.marker
-      computer.score += 1
+      computer.score_point
     end
   end
 
@@ -282,10 +286,11 @@ class TTTGame
       puts "It's a tie!"
     end
     puts "You: #{human.score}; Computer: #{computer.score}"
+    puts "You won the game!" if human.max_score?
+    puts "Computer won the game!" if computer.max_score?
   end
 
   def play_again?
-    display_final_score if human.score == MAX_SCORE || computer.score == MAX_SCORE
     answer = nil
     loop do
       puts 'Would you like to play again? (y/n)'
@@ -301,6 +306,11 @@ class TTTGame
     board.reset
     @current_marker = FIRST_TO_MOVE
     clear
+    if human.max_score? || computer.max_score?
+      human.score_reset
+      computer.score_reset
+      choose_marker
+    end
   end
 end
 
