@@ -95,8 +95,8 @@ class Player
   end
 end
 
-class Human < Player
-  def move(board)
+module HumanPlayer
+  def human_move
     puts "Choose a square (#{joinor(board.unmarked_keys)}):"
     square = nil
     loop do
@@ -105,7 +105,7 @@ class Human < Player
       puts "Sorry, that's not a valid choice."
     end
 
-    board[square] = marker
+    board[square] = human.marker
   end
 
   def joinor(array, delimiter = ', ', word = 'or')
@@ -114,34 +114,17 @@ class Human < Player
   end
 end
 
-class Computer < Player
-  def move(board)
-    board[best_move(board)] = marker
+module ComputerPlayer
+  def computer_move
+    board[board.unmarked_keys.sample] = computer.marker
   end
 
-  def random_move(board)
-    board[board.unmarked_keys.sample] = marker
-  end
 
-  def best_move(board, depth=0, score={})
-    return 0 if board.full?
-    return -1 if board.someone_won?
-
-    board.unmarked_keys.each do |space|
-      board[space] = board.unmarked_keys.size.even? ? 'O' : 'X'
-      score[space] = -1 * best_move(board, depth + 1, {})
-      board[space] = ' '
-    end
-
-    if depth == 0
-      return score.max_by { |_, value| value }[0]
-    else
-      return score.max_by { |_, value| value }[1]
-    end
-  end
 end
 
 class TTTGame
+  include HumanPlayer
+  include ComputerPlayer
   attr_reader :board, :human, :computer
   X_MARKER = 'X'
   O_MARKER = 'O'
@@ -149,8 +132,8 @@ class TTTGame
 
   def initialize
     @board = Board.new
-    @human = Human.new(X_MARKER)
-    @computer = Computer.new(O_MARKER)
+    @human = Player.new(X_MARKER)
+    @computer = Player.new(O_MARKER)
     @current_marker = FIRST_TO_MOVE
   end
 
@@ -209,10 +192,10 @@ class TTTGame
 
   def current_player_moves
     if @current_marker == X_MARKER
-      human.move(board)
+      human_move
       @current_marker = O_MARKER
     else
-      computer.move(board)
+      computer_move
       @current_marker = X_MARKER
     end
   end
