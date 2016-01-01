@@ -86,7 +86,7 @@ end
 
 class Player
   attr_accessor :score, :marker
-  MAX_SCORE = 2
+  MAX_SCORE = 5
 
   def initialize(marker)
     @marker = marker
